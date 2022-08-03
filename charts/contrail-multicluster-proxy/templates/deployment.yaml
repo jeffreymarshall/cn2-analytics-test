@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: multicluster-proxy
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: multicluster-proxy
+  template:
+    metadata:
+      labels:
+        app: multicluster-proxy
+    spec:
+      serviceAccountName: multicluster-proxy
+      containers:
+        - name: multicluster-proxy
+          image: {{ .Values.common.registry }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - -c/etc/config/cm/config.yaml
+          env:
+          - name: NAMESPACE
+            value: {{ .Release.Namespace }}
+          - name: LOG_CONFIG_FILE
+            value: /etc/config/cm/log.yaml
+          ports:
+            - name: rest
+              containerPort: 9090
+              protocol: TCP
+          volumeMounts:
+            - name: config
+              mountPath: /etc/config/cm
+{{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.imagePullSecrets | indent 8 }}
+      {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: multicluster-proxy

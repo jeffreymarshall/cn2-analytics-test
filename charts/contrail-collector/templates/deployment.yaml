@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: collector
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: collector
+  template:
+    metadata:
+      labels:
+        app: collector
+    spec:
+      serviceAccountName: collector
+      containers:
+        - name: collector
+          image: {{ .Values.common.registry }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: LOG_CONFIG_FILE
+              value: /etc/config/cm/config.yaml
+            - name: DATABASES_INFLUXDB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  key: admin-token
+                  name: influxdb-auth
+          args:
+            - -c/etc/config/cm/config.yaml
+          ports:
+            - name: rest
+              containerPort: 9090
+              protocol: TCP
+            - name: json
+              containerPort: 5170
+              protocol: TCP
+            - name: msgpack
+              containerPort: 24224
+              protocol: TCP
+          volumeMounts:
+            - name: config
+              mountPath: /etc/config/cm
+          readinessProbe:
+            httpGet:
+              path: /api/healthCheck
+              port: 9090
+              scheme: HTTPS
+            initialDelaySeconds: 5
+            timeoutSeconds: 5
+            periodSeconds: 5
+            failureThreshold: 1
+            successThreshold: 1
+{{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.imagePullSecrets | indent 8 }}
+      {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: collector
+            items:
+            - key: config.yaml
+              path: config.yaml

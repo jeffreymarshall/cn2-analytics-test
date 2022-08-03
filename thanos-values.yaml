@@ -1,0 +1,30 @@
+contrail-multicluster-proxy:
+  prometheus:
+    namespacePrefix: true
+    service: thanos-query-http:10902
+
+kube-prometheus-stack:
+  prometheus:
+    prometheusSpec:
+      replicas: 2
+      podAntiAffinity: hard
+      thanos:
+        baseImage: hub.juniper.net/cn2/thanos
+        version: v0.24.0
+  grafana:
+    datasources:
+      defaultDatasourceEnabled: false
+    additionalDataSources:
+      - name: Prometheus
+        type: prometheus
+        url: http://{{ printf "%s-thanos-query-http.%s" .Release.Name .Release.Name }}:10902/
+        access: proxy
+        isDefault: false
+        jsonData:
+          timeInterval: 30s
+
+thanos:
+  query:
+    enabled: true
+  imagePullSecrets:
+  - name: registrypullsecret

@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: multicluster-proxy
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: multicluster-proxy
+data:
+  log.yaml: |-
+    log:
+      caller: true
+      format: console
+      level:
+        default: debug
+  config.yaml: |-
+    http_port: 9090
+    prometheus:
+      prefix: /prometheus/
+{{- if .Values.prometheus.namespacePrefix }}
+      target: {{ .Release.Namespace }}-{{ .Values.prometheus.service }}
+{{ else }}
+      target: {{ .Values.prometheus.service }}
+{{ end }}
+    tls_config:
+      server_name: localhost
+      key_file: /etc/config/server.key
+      cert_file: /etc/config/server.crt
+      ca_file: /etc/config/ca.crt

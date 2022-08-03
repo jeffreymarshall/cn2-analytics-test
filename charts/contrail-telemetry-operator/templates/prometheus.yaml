@@ -1,0 +1,25 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: cn2-pod-monitor
+  labels:
+    release: {{ .Release.Name }}
+spec:
+  namespaceSelector:
+{{ if .Values.prometheusNamespace }}
+    matchNames: [ "contrail", {{ .Values.prometheusNamespace }} ]
+{{ else }}
+    matchNames: [ "contrail", {{ .Release.Namespace }} ]
+{{ end }}
+  selector: 
+    matchExpressions:
+      - {key: app, operator: In, values: [contrail-vrouter-masters, contrail-vrouter-nodes, contrail-control]}
+  podMetricsEndpoints:
+  - port: metrics
+    scheme: http
+    path: /metrics
+    metricRelabelings:
+    - sourceLabels:
+      - __address__
+      targetLabel: cluster
+      replacement: local

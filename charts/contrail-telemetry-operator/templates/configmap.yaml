@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: telemetry-operator-config
+  labels:
+    app: {{ .Release.Name }}
+data:
+  config.yaml: |-
+{{- if .Values.prometheusNamespace }}
+    prometheusNamespace: {{ .Values.prometheusNamespace }}
+{{- else }}
+    prometheusNamespace: {{ .Release.Namespace }}
+{{- end}}
+    alertRulesFile: /config/alerts/rules.yaml
+    vrouterMetricFile: /etc/telemetry-exporter/config/config-vrouter.yaml
+    controllerMetricFile: /etc/telemetry-exporter/config/config-controller.yaml
+    metricsAddress: {{ .Values.metricsAddress }}
+    metricGroupVersion: {{ .Values.metricGroupVersion }}
+    disabledMetricGroups: {{ .Values.disabledMetricGroups }}
+    workers: {{ .Values.workers }}
+

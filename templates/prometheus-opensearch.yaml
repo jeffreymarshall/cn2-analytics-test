@@ -1,0 +1,43 @@
+{{- if eq (include "installOpenSearchDashboards" .) "true" -}}
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: opensearch-pod-monitor
+  labels:
+    release: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  namespaceSelector:
+    matchNames: [ {{ .Release.Namespace }} ]
+  selector: 
+    matchExpressions:
+      - {key: app.kubernetes.io/name, operator: In, values: [opensearch]}
+  podMetricsEndpoints:
+  - port: http
+    scheme: https
+    path: /_prometheus/metrics
+    basicAuth:
+      username:
+        name: opensearch-basic-auth
+        key: user
+      password:
+        name: opensearch-basic-auth
+        key: password
+    tlsConfig:
+      insecureSkipVerify: true
+    metricRelabelings:
+    - sourceLabels:
+      - __address__
+      targetLabel: cluster
+      replacement: local
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: opensearch-basic-auth
+  namespace: {{ .Release.Namespace }}
+data:
+  password: YWRtaW4= # admin
+  user: YWRtaW4= # admin
+type: Opaque
+{{ end }}

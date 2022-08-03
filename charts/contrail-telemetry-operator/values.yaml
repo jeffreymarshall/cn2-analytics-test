@@ -1,0 +1,26 @@
+replicaCount: 1
+logLevelVerbosity: 1
+
+common:
+  registry: hub.juniper.net/
+
+image:
+  repository: cn2/contrail-k8s-telemetry-operator
+  tag: 22.2.0.93
+  pullPolicy: Always
+
+webhookProxyImage:
+  registry: hub.juniper.net/
+  repository: cn2/kube-rbac-proxy
+  tag: v0.5.0
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+prometheusNamespace: 
+metricsAddress: :8080
+
+webhookSecretName: telemetry-operator-webhook-secret
+metricGroupVersion: v1
+disabledMetricGroups:
+workers: 10

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: introspect
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: introspect
+data:
+  log.yaml: |-
+    log:
+      caller: true
+      format: console
+      level:
+        default: debug

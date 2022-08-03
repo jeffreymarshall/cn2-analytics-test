@@ -1,0 +1,12 @@
+replicaCount: 1
+log_level: info
+
+common:
+  registry: hub.juniper.net/
+
+image:
+  repository: cn2/webui
+  tag: 22.2.0.93
+  pullPolicy: Always
+
+imagePullSecrets: []

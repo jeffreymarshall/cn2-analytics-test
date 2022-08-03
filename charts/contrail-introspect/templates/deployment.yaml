@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: introspect
+  name: introspect
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: introspect
+  template:
+    metadata:
+      labels:
+        app: introspect
+      name: introspect
+    spec:
+      serviceAccountName: introspect
+      containers:
+        - name: introspect
+          image: {{ .Values.common.registry }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - --cert-dir=/tmp
+            - --secure-port=6443
+          env:
+            - name: NAMESPACE
+              value: {{ .Release.Namespace }}
+            - name: LOG_CONFIG_FILE
+              value: /etc/config/cm/log.yaml
+            - name: API_GROUP
+              value: {{ .Values.api.group }}
+            - name: API_VERSION
+              value: {{ .Values.api.version }}
+          ports:
+            - containerPort: 6443
+              name: https
+          volumeMounts:
+            - name: config
+              mountPath: /etc/config/cm
+{{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.imagePullSecrets | indent 8 }}
+      {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: introspect

@@ -1,0 +1,28 @@
+{{- if eq (include "installInfluxdb2" .) "true" -}}
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: influxdb-pod-monitor
+  labels:
+    release: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  namespaceSelector:
+    matchNames: [ {{ .Release.Namespace }} ]
+  selector: 
+    matchExpressions:
+      - {key: app.kubernetes.io/name, operator: In, values: [influxdb2]}
+  podMetricsEndpoints:
+  - port: http
+    scheme: http
+    path: /metrics
+    metricRelabelings:
+    - sourceLabels:
+      - __address__
+      targetLabel: cluster
+      replacement: local
+    - sourceLabels:
+      - __name__
+      regex: 'go_info|http_api_request_duration_seconds_.*|http_api_requests_total|influxdb_buckets_total|influxdb_dashboards_total|service_bucket_new_call_total|service_bucket_new_duration_.*|go_memstats_gc_sys_bytes|go_memstats_gc_cpu_fraction|go_memstats_frees_total|go_memstats_buck_hash_sys_bytes'
+      action: drop
+{{ end }}

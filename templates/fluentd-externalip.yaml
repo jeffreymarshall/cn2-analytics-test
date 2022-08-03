@@ -1,0 +1,22 @@
+{{- if eq (include "installFluentd" .) "true" -}}
+{{- if not .Values.openShift }}
+{{- if .Values.externalIP -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: fluentd-externalip
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+  - name: forwarder
+    port: 24224
+    protocol: TCP
+    targetPort: 24224
+  selector:
+    app.kubernetes.io/name: fluentd
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  externalIPs:
+  - {{ .Values.externalIP }}
+{{ end }}
+{{ end }}
+{{ end }}

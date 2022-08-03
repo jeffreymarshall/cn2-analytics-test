@@ -1,0 +1,35 @@
+replicaCount: 1
+log_level: info
+
+common:
+  registry: hub.juniper.net/
+
+server:
+  read_timeout: 10
+  write_timeout: 5
+  address: ":9090"
+  tls:
+    ca_file: /etc/certs/ca.crt
+    key_file: /etc/certs/tls.key
+    cert_file: /etc/certs/tls.crt
+  enable_grpc: true
+  keepalive_time: 30
+  keepalive_timeout: 20
+
+image:
+  repository: cn2/collector
+  tag: 22.2.0.93
+  pullPolicy: Always
+
+imagePullSecrets: []
+
+database:
+  influx:
+    bucket: cn2
+    organization: contrail
+
+resources:
+  limits:
+    memory: 200Mi
+  requests:
+    memory: 200Mi

@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    control-plane: controller-manager
+  name: telemetry-operator-controller-manager
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: telemetry-operator
+  template:
+    metadata:
+      labels:
+        app: telemetry-operator
+    spec:
+      serviceAccountName: telemetry-operator
+      containers:
+      - args:
+        - --config=/etc/config/config.yaml
+        - --enable-leader-election
+        image: {{ .Values.common.registry }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        name: telemetry-operator
+        env:
+          - name: NAMESPACE
+            value: {{ .Release.Namespace }}
+          - name: DEPLOYMENT
+            value: telemetry-operator-controller-manager
+        ports:
+          - name: metrics
+            containerPort: 8080
+            protocol: TCP
+          - name: webhook-server
+            containerPort: 9443
+            protocol: TCP
+        volumeMounts:
+          - name: config
+            mountPath: /etc/config
+          - name: webhook-secret
+            mountPath: /tmp/k8s-webhook-server/serving-certs
+            readOnly: true
+      - args:
+        - --secure-listen-address=0.0.0.0:8443
+        - --upstream=http://127.0.0.1:8080/
+        - --v=10
+        image: {{ .Values.webhookProxyImage.registry }}{{ .Values.webhookProxyImage.repository }}:{{ .Values.webhookProxyImage.tag }}
+        imagePullPolicy: {{ .Values.webhookProxyImage.pullPolicy }}
+        name: kube-rbac-proxy
+        ports:
+        - containerPort: 8443
+          name: https
+{{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.imagePullSecrets | indent 8 }}
+      {{- end }}
+      volumes:
+      - name: config
+        configMap:
+          name: telemetry-operator-config
+      - name: webhook-secret
+        secret:
+          secretName: {{ .Values.webhookSecretName }}

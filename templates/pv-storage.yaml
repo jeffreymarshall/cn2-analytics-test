@@ -1,0 +1,63 @@
+{{- if eq (include "installStorage" .) "true" -}}
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ .Values.storage.storageclass }}
+  annotations:
+    storageclass.beta.kubernetes.io/is-default-class: "true"
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+reclaimPolicy: Delete
+---
+apiVersion: apps.kruise.io/v1alpha1
+kind: BroadcastJob
+metadata:
+  name: installutil
+spec:
+  parallelism: 1
+  template:
+    spec:
+      restartPolicy: Never
+      serviceAccountName: analyticsinstall
+      containers:
+      - name: init
+        image: {{ .Values.storage.customizer.image.repository }}:{{ .Values.storage.customizer.image.tag }} 
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: PVS
+{{- if .Values.openShift }}
+          value: influxdb=30,prometheus=30,thanosruler=10
+{{ else }}
+          value: opensearch=30,influxdb=30,prometheus=30
+{{ end }}
+        - name: REPLICAS
+{{- if .Values.openShift }}
+          value: influxdb=1,prometheus=2,thanosruler=2
+{{ else }}
+          value: opensearch=1,influxdb=1,prometheus={{ (index .Values "kube-prometheus-stack" "prometheus" "prometheusSpec" "replicas") }}
+{{ end }}
+        volumeMounts:
+        - mountPath: /mnt/data
+          name: data
+        securityContext:
+          privileged: true
+{{- if .Values.storage.customizer.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.storage.customizer.imagePullSecrets | indent 8 }}
+      {{- end }}
+      volumes:
+      - name: data
+        hostPath:
+          path: /mnt/data
+          type: DirectoryOrCreate
+  completionPolicy:
+    type: Always
+{{ end }}

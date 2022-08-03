@@ -1,0 +1,104 @@
+{{- if .Values.openShift -}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-workload-monitoring-config
+  namespace: openshift-user-workload-monitoring
+data:
+  config.yaml: |
+    prometheus:
+      retention: 24h
+      resources:
+        requests:
+          cpu: 200m
+          memory: 400Mi
+      volumeClaimTemplate:
+        spec:
+          storageClassName: prometheus
+          resources:
+            requests:
+              storage: 30Gi
+    thanosRuler:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: thanosruler
+          resources:
+            requests:
+              storage: 10Gi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-monitoring-config
+  namespace: openshift-monitoring
+data:
+  config.yaml: |
+    enableUserWorkload: true
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: cn2-pod-monitor
+  namespace: contrail
+  labels:
+    release: analytics
+spec:
+  selector:
+    matchExpressions:
+      - {key: app, operator: In, values: [contrail-vrouter-masters, contrail-vrouter-nodes, contrail-control]}
+  podMetricsEndpoints:
+  - port: metrics
+    scheme: http
+    path: /metrics
+    metricRelabelings:
+    - sourceLabels:
+      - __address__
+      targetLabel: cluster
+      replacement: local
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: contrail-alert-rules
+  namespace: contrail
+spec:
+  groups:
+  - name: contrail-alert.rules
+    rules:
+    - alert: VRouterConnectionDown
+      expr: "virtual_router_connection_status == 1"
+      labels:
+        severity: major
+      annotations:
+        summary: "Connection Down"
+        description: {{ "VRouter {{ $labels.vrouter_name }} {{ $labels.conn_type }} connection to {{ $labels.conn_id }} is down" }}
+    - alert: VRouterNonFunctional
+      expr: "virtual_router_agent_state == 1"
+      labels:
+        severity: major
+      annotations:
+        summary: "VRouter Non-Functional"
+        description: {{ "VRouter {{ $labels.vrouter_name }} is non-functional" }}
+    - alert: ControllerNonFunctional
+      expr: "controller_state == 1"
+      labels:
+        severity: major
+      annotations:
+        summary: "Controller Non-Functional"
+        description: {{ "Controller {{ $labels.controller_name }} is non-functional" }}
+    - alert: ControllerConnectionDown
+      expr: "controller_connection_status == 1"
+      labels:
+        severity: major
+      annotations:
+        summary: "Connection Down"
+        description: {{ "Controller {{ $labels.controller_name }} {{ $labels.conn_type }} connection to {{ $labels.conn_id }} is down" }}
+    - alert: ControllerDBConnectionDown
+      expr: "controller_bgp_router_config_db_conn_status == 0"
+      labels:
+        severity: major
+      annotations:
+        summary: "Database Connection Down"
+        description: {{ "Controller {{ $labels.controller }} connection to database is down" }}
+{{ end }}

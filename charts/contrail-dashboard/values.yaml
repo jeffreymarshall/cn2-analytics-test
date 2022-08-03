@@ -1,0 +1,11 @@
+replicaCount: 1
+
+common:
+  registry: hub.juniper.net/
+
+image:
+  repository: cn2/dashboard
+  tag: 22.2.0.93
+  pullPolicy: Always
+
+imagePullSecrets: []

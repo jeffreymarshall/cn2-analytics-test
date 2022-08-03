@@ -1,0 +1,70 @@
+{{- if eq (include "installFluentd" .) "true" -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    {{- include "fluentd.labels" . | nindent 4 }}
+  name: elasticsearch-templates
+data:
+  contrail-kubernetes.json: |-
+    {
+      "index_patterns": ["contrail.kubernetes-*"],
+      "settings": {
+        "number_of_shards": 1,
+        "number_of_replicas" : 0
+      },
+      "mappings": {
+        "properties": {
+          "cluster_name": {
+            "type": "keyword"
+          },
+          "kubernetes": {
+            "properties": {
+              "container_hash": {
+                "type": "keyword"
+              },
+              "container_image": {
+                "type": "keyword"
+              },
+              "container_name": {
+                "type": "keyword"
+              },
+              "docker_id": {
+                "type": "keyword"
+              },
+              "host": {
+                "type": "keyword"
+              },
+              "namespace_name": {
+                "type": "keyword"
+              },
+              "pod_id": {
+                "type": "keyword"
+              },
+              "pod_name": {
+                "type": "keyword"
+              }
+            }
+          },
+          "time": {
+            "type": "date"
+          },
+          "@timestamp": {
+            "type": "alias",
+            "path": "time"
+          },
+          "stream": {
+            "type": "keyword"
+          },
+          "level": {
+            "type": "keyword"
+          },
+          "logger": { "type": "text", "analyzer": "simple", "search_analyzer": "simple" },
+          "caller": { "type": "text", "analyzer": "simple", "search_analyzer": "simple" },
+          "message": {
+            "type": "text"
+          }
+        }
+      }
+    }
+{{ end }}

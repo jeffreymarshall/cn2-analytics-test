@@ -1,0 +1,232 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.5
+  creationTimestamp: null
+  name: alerts.telemetry.juniper.net
+spec:
+  group: telemetry.juniper.net
+  names:
+    kind: Alert
+    listKind: AlertList
+    plural: alerts
+    singular: alert
+  scope: Namespaced
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+    schema:
+      openAPIV3Schema:
+        description: Alert is the Schema for the alerts API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: AlertSpec defines the desired state of Alert
+            properties:
+              foo:
+                description: Foo is an example field of Alert. Edit Alert_types.go to
+                  remove/update
+                type: string
+            type: object
+          status:
+            description: AlertStatus defines the observed state of Alert
+            type: object
+        type: object
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.5
+  creationTimestamp: null
+  name: prometheusk8sclusters.telemetry.juniper.net
+spec:
+  group: telemetry.juniper.net
+  names:
+    kind: PrometheusK8sCluster
+    listKind: PrometheusK8sClusterList
+    plural: prometheusk8sclusters
+    singular: prometheusk8scluster
+  scope: Namespaced
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+    schema:
+      openAPIV3Schema:
+        description: PrometheusK8sCluster is the Schema for the prometheusk8sclusters
+          API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: PrometheusK8sClusterSpec defines the desired state of PrometheusK8sCluster
+            properties:
+              certAuthoritySecretName:
+                type: string
+              clientCertSecretName:
+                type: string
+              clientKeySecretName:
+                type: string
+              clusterName:
+                type: string
+              server:
+                type: string
+            type: object
+          status:
+            description: PrometheusK8sClusterStatus defines the observed state of PrometheusK8sCluster
+            type: object
+        type: object
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.2.5
+  creationTimestamp: null
+  name: metricgroups.telemetry.juniper.net
+spec:
+  group: telemetry.juniper.net
+  names:
+    kind: MetricGroup
+    listKind: MetricGroupList
+    plural: metricgroups
+    singular: metricgroup
+  scope: Namespaced
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+    schema:
+      openAPIV3Schema:
+        description: MetricGroup is the Schema for the metricgroups API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: MetricGroupSpec defines the desired state of MetricGroup
+            properties:
+              clusters:
+                description: Specifies the name of clusters this metric group will apply.
+                  Empty means for all clusters
+                items:
+                  type: string
+                type: array
+              export:
+                description: Indicate whether the export function is enabled
+                type: boolean
+              metricType:
+                description: Specifies the type of metric this group contains
+                enum:
+                - VROUTER
+                - CONTROLLER
+                type: string
+              metrics:
+                description: Specifies the name of metrics
+                items:
+                  type: string
+                minItems: 1
+                type: array
+            type: object
+          status:
+            description: MetricGroupStatus defines the observed state of MetricGroup
+            type: object
+        type: object
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: analyticdeployments.telemetry.juniper.net
+spec:
+  group: telemetry.juniper.net
+  names:
+    kind: AnalyticDeployment
+    listKind: AnalyticDeploymentList
+    plural: analyticdeployments
+    singular: analyticdeployment
+  scope: Namespaced
+  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+    schema:
+      openAPIV3Schema:
+        description: AnalyticDeployment is the Schema for the analytics deployment
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: AnalyticDeploymentSpec defines the desired state of AnalyticDeployment
+            properties:
+            type: object
+          status:
+            description: AnalyticDeploymentStatus defines the observed state of AnalyticDeployment
+            type: object
+        type: object
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

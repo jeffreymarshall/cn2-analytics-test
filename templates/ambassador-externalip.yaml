@@ -1,0 +1,21 @@
+{{- if eq (include "installAmbassador" .) "true" -}}
+{{- if .Values.externalIP -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: ambassador-externalip
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: emissary-ingress
+    profile: main
+  ports:
+  - name: https
+    protocol: TCP
+    port: 443
+    targetPort: 8443
+  externalIPs:
+  - {{ .Values.externalIP }}
+{{ end }}
+{{ end }}
