@@ -1,0 +1,117 @@
+apiVersion: v1
+entries:
+  contrail-analytics:
+  - apiVersion: v2
+    appVersion: 22.2.0
+    created: "2022-08-03T16:29:25.076697147-07:00"
+    dependencies:
+    - condition: kruise.install
+      name: kruise
+      repository: ""
+      tags:
+      - centralClusterComponents
+      version: 1.1.0
+    - condition: emissary-ingress.install
+      name: emissary-ingress
+      repository: ""
+      tags:
+      - centralClusterComponents
+      version: 7.1.9
+    - condition: opensearch.install
+      name: opensearch
+      repository: ""
+      tags:
+      - centralClusterComponents
+      version: 1.9.0
+    - condition: opensearch-dashboards.install
+      name: opensearch-dashboards
+      repository: ""
+      tags:
+      - centralClusterComponents
+      version: 1.3.0
+    - condition: fluent-bit.install
+      name: fluent-bit
+      repository: ""
+      tags:
+      - centralClusterComponents
+      - distributedClusterComponents
+      version: 0.19.17
+    - condition: fluentd.install
+      name: fluentd
+      repository: ""
+      tags:
+      - centralClusterComponents
+      version: 0.3.5
+    - condition: influxdb2.install
+      name: influxdb2
+      repository: ""
+      tags:
+      - centralClusterComponents
+      version: 2.0.1
+    - condition: kube-prometheus-stack.install
+      name: kube-prometheus-stack
+      repository: ""
+      tags:
+      - centralClusterComponents
+      version: 32.2.1
+    - condition: thanos.install
+      name: thanos
+      repository: ""
+      tags:
+      - centralClusterComponents
+      version: 0.4.6
+    - condition: contrail-collector.install
+      name: contrail-collector
+      repository: ""
+      tags:
+      - centralClusterComponents
+      version: 1.0.0
+    - condition: contrail-dashboard.install
+      name: contrail-dashboard
+      repository: ""
+      tags:
+      - centralClusterComponents
+      version: 1.0.0
+    - condition: contrail-introspect.install
+      name: contrail-introspect
+      repository: ""
+      tags:
+      - centralClusterComponents
+      version: 1.0.0
+    - condition: contrail-multicluster-proxy.install
+      name: contrail-multicluster-proxy
+      repository: ""
+      tags:
+      - centralClusterComponents
+      version: 1.0.0
+    - condition: contrail-portal.install
+      name: contrail-portal
+      repository: ""
+      tags:
+      - centralClusterComponents
+      version: 1.0.0
+    - condition: contrail-telemetry-operator.install
+      name: contrail-telemetry-operator
+      repository: ""
+      tags:
+      - centralClusterComponents
+      version: 1.0.0
+    - condition: contrail-grafana-customization.install
+      name: contrail-grafana-customization
+      repository: ""
+      tags:
+      - centralClusterComponents
+      version: 1.0.0
+    description: Contrail Analytics Helm chart
+    digest: 0b9625becee4ad5ef25fc611b15314e796812ff39dd1c082a4d3d6e6f08805fb
+    maintainers:
+    - email: nadeem@juniper.net
+      name: Nadeem Khan
+    - email: gurminders@juniper.net
+      name: Gurminder Singh
+    name: contrail-analytics
+    type: application
+    urls:
+    - contrail-analytics-22.2.0.93.tgz
+    version: 22.2.0-rev0bb9dbbd1
+generated: "2022-08-03T16:29:25.019002815-07:00"
