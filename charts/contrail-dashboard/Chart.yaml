@@ -1,8 +1,0 @@
-apiVersion: v1
-appVersion: 1.0.0
-description: A Helm chart for CN2 Dashboard
-maintainers:
-- email: gurminders@juniper.net
-  name: Gurminder Singh
-name: contrail-dashboard
-version: 1.0.0

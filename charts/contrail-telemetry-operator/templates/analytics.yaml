@@ -1,5 +1,0 @@
-apiVersion: telemetry.juniper.net/v1alpha1
-kind: AnalyticDeployment
-metadata:
-  name: contrail-analytics
-  namespace: {{ .Release.Namespace }}

@@ -1,8 +1,0 @@
-apiVersion: v1
-appVersion: 1.0.0
-description: A Helm chart for Introspect
-maintainers:
-- email: kiyyer@juniper.net
-  name: Kartik
-name: contrail-introspect
-version: 1.0.0
